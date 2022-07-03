@@ -25,14 +25,18 @@ SELECT * FROM sales;
 
 -- 2.1: Assign numbers to each row of the departments table
 
+SELECT *, ROW_NUMBER() OVER() AS row_num
+  FROM departments
+  WHERE division = 'Entertainment'
+  ORDER BY row_num ASC;
 
 -- Exercise 2.1: Assign numbers to each row of 
 -- the department for the Entertainment division
-SELECT *,
-___ OVER() AS Row_N
-FROM ___
-WHERE ___ = ___
-ORDER BY Row_N ASC;
+
+SELECT *, ROW_NUMBER() OVER() AS row_num
+FROM departments
+WHERE division = 'Entertainment'
+ORDER BY row_num ASC;
 
 #############################
 -- Task Three: ROW_NUMBER() - Part Two
@@ -48,9 +52,18 @@ SELECT * FROM employees;
 -- hire_date, and department of all employees in the sports
 -- department ordered by the hire date
 
+SELECT employee_id, first_name, hire_date, department,
+	   ROW_NUMBER OVER(ORDER BY hire_date)
+  FROM employees
+  WHERE department = 'Sports';
+
 
 -- 3.3: Order by multiple columns
 
+SELECT employee_id, first_name, hire_date, salary, department,
+	   ROW_NUMBER OVER(ORDER BY hire_date ASC, salary DESC)
+  FROM employees
+  WHERE department = 'Sports';
 
 -- 3.4: Ordering in- and outside the OVER() clause
 SELECT employee_id, first_name, hire_date, salary, department,
