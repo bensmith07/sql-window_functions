@@ -82,11 +82,17 @@ ORDER BY employee_id;
 -- 4.1: Retrieve the employee_id, first_name, 
 -- hire_date of employees for different departments
 
+SELECT employee_id, first_name, hire_date, department,
+       ROW_NUMBER() OVER(PARTITION BY department) AS row_num
+  FROM employees
+  ORDER BY department ASC;
+
 
 -- Exercise 4.1: Order by the hire_date
 SELECT employee_id, first_name, department, hire_date,
-___ ___ (PARTITION BY department
-				   ___ ___) AS Row_N
+	   ROW_NUMBER() OVER(PARTITION BY department
+			             ORDER BY hire_date
+						 ) AS row_num
 FROM employees
 ORDER BY department ASC;
 
