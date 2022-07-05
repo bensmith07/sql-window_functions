@@ -120,6 +120,9 @@ WITH customer_purchase AS (
 
 -- 5.3: Number each customer by how many purchases they've made
 
+SELECT customer_id, customer_name, purchase_count,
+       ROW_NUMBER() OVER(ORDER BY purchase_count DESC) AS row_num
+  FROM customer_purchase;
 
 -- Same CTE as 5.2
 WITH customer_purchase AS (
@@ -134,10 +137,9 @@ WITH customer_purchase AS (
 -- Exercise 5.1: Number each customer by their customer segment
 -- and by how many purchases they've made in descending order
 SELECT customer_id, customer_name, segment, purchase_count,
-___ OVER (___ ___
-				   ___ ___ ___) AS Row_N
-FROM customer_purchase
-ORDER BY segment, purchase_count DESC;
+  ROW_NUMBER() OVER(PARTITION BY segment
+  			        ORDER BY segment, purchase_count DESC)
+  FROM customer_purchase;
 
 #############################
 -- Task Six: Fetching: LEAD() & LAG()
@@ -148,29 +150,40 @@ ORDER BY segment, purchase_count DESC;
 -- 6.1: Retrieve all employees first name, department, salary
 -- and the salary after that employee
 
+SELECT first_name, department, salary,
+       LEAD(salary) OVER() AS next_salary
+	FROM employees;
+
 
 -- 6.2: Retrieve all employees first name, department, salary
 -- and the salary before that employee
 
+SELECT first_name, department, salary
+	   LAG(salary) OVER() AS previous_salary
+	FROM employees;
+
 
 -- 6.3: Retrieve all employees first name, department, salary
 -- and the salary after that employee in order of their salaries
+
+SELECT first_name, department, salary
+	   LEAD(salary) OVER(ORDER BY salary DESC) AS next_salary
+	FROM employees;
 
 
 -- Exercise 6.1: Retrieve all employees first name, department, salary
 -- and the salary before that employee in order of their salaries in
 -- descending order. Call the new column closest_higher_salary
 SELECT first_name, department, salary,
-___(___) ___ (ORDER BY ___ ___) ___
-FROM employees;
+       LAG(salary) OVER(ORDER BY salary DESC) AS closest_higher_salary
+	FROM employees;
 
 -- Exercise 6.2: Retrieve all employees first name, department, salary
 -- and the salary after that employee for each department in descending order
 -- of their salaries. Call the new column closest_lowest_salary 
 SELECT first_name, department, salary,
-___ OVER (___ ___
-				   ___ ___ ___) ___
-FROM employees;
+	   LEAD(salary) OVER(ORDER BY salary DESC) AS closest_lower_salary
+	FROM employees;
 
 -- What do you think this query will return?
 SELECT first_name, department, salary,
