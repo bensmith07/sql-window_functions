@@ -202,9 +202,17 @@ WHERE department = 'Clothing';
 -- hire_date of all employees. Add a new column called first_emp_date 
 -- that returns the hire date of the first hired employee
 
+SELECT first_name, last_name, department, hire_date,
+	   FIRST_VALUE(hire_date) OVER(ORDER BY hire_date)
+	FROM employees;
 
 -- 7.2: Find the difference between the hire date of the first employee
 -- hired and every other employees
+
+SELECT first_name, last_name, hire_date,
+	   hire_date - FIRST_VALUE(hire_date) OVER(ORDER BY hire_date) 
+	   	AS days_since_first_hire
+	FROM employees;
 
 
 -- Exercise 7.1: Partition by department
@@ -220,7 +228,7 @@ FROM (
 SELECT first_name, last_name, department, hire_date,
 ___(___) OVER (___ ___
 							 ORDER BY hire_date) AS first_emp_date
-FROM employees) a
+FROM employees) 
 ORDER BY department;
 
 #############################
