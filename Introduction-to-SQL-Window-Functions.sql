@@ -27,7 +27,6 @@ SELECT * FROM sales;
 
 SELECT *, ROW_NUMBER() OVER() AS row_num
   FROM departments
-  WHERE division = 'Entertainment'
   ORDER BY row_num ASC;
 
 -- Exercise 2.1: Assign numbers to each row of 
@@ -211,25 +210,19 @@ SELECT first_name, last_name, department, hire_date,
 
 SELECT first_name, last_name, hire_date,
 	   hire_date - FIRST_VALUE(hire_date) OVER(ORDER BY hire_date) 
-	   	AS days_since_first_hire
+	   	 AS days_since_first_hire
 	FROM employees;
 
 
--- Exercise 7.1: Partition by department
-SELECT first_name, last_name, department, hire_date,
-___(___) OVER (___ ___
-					 ORDER BY hire_date) AS first_emp_date
-FROM employees;
-
--- Exercise 7.2: Find the difference between the hire date of the 
+-- Exercise 7.3: Find the difference between the hire date of the 
 -- first employee hired and every other employees partitioned by department
-SELECT *, ___
-FROM (
 SELECT first_name, last_name, department, hire_date,
-___(___) OVER (___ ___
-							 ORDER BY hire_date) AS first_emp_date
-FROM employees) 
-ORDER BY department;
+	   hire_date - FIRST_VALUE(hire_date) OVER(PARTITION BY department 
+											   ORDER BY hire_date
+                                               )
+         AS days_since_first_hire
+  FROM employees
+  ORDER BY department;
 
 #############################
 -- Task Eight: FIRST_VALUE() - Part Two
@@ -240,26 +233,30 @@ ORDER BY department;
 -- Exercise 8.1: Return the first salary for different departments
 -- Order by the salary in descending order
 SELECT first_name, email, department, salary,
-___ OVER(___ ___
-						 ___ ___ ___) first_salary
-FROM employees;
+       NTH_VALUE(salary, 1) OVER(PARTITION BY department
+								 ORDER BY salary DESC) AS first_salary
+  FROM employees
+  ORDER BY department;
 
 -- OR
 SELECT first_name, email, department, salary,
 MAX(salary) OVER(PARTITION BY department
-				 ORDER BY salary DESC) first_salary
+				 ORDER BY salary DESC) AS first_salary
 FROM employees;
 
 -- Exercise 8.2: Return the first salary for different departments
 -- Order by the first_name in ascending order
 SELECT first_name, email, department, salary,
-___ OVER(___ ___
-						 ___ ___ ___)
+       NTH_VALUE(salary, 1) OVER(PARTITION BY department
+								 ORDER BY first_name ASC) AS first_salary
 FROM employees;
 
--- 8.1: Return the fifth salary for different departments
+-- 8.3: Return the fifth salary for different departments
 -- Order by the first_name in ascending order
 
-
+SELECT first_name, email, department, salary,
+       NTH_VALUE(salary, 5) OVER(PARTITION BY department
+								 ORDER BY first_name ASC) AS fifth_salary
+FROM employees;
 
 
