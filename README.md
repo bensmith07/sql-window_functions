@@ -1,1 +1,1 @@
-for work completed as part of Coursera's Introduction to SQL Window Functions
+for work completed as part of Coursera's Introduction to SQL Window Functions & SQL Window Functions for Analytics courses.
