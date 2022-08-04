@@ -4,6 +4,8 @@
 ###############################################################
 ###############################################################
 
+use wind_func_proj_db;
+
 #############################
 -- Task One: Getting Started
 -- In this task, we will get started with the project
@@ -25,13 +27,12 @@ SELECT * FROM sales;
 
 -- 2.1: Retrieve a list of employee_id, first_name, hire_date, 
 -- and department of all employees ordered by the hire date
-SELECT employee_id, first_name, department, hire_date,
-ROW_NUMBER() OVER (ORDER BY hire_date) AS Row_N
-FROM employees;
-
--- 2.2: Retrieve the employee_id, first_name, 
--- hire_date of employees for different departments
-
+SELECT employee_id
+       , first_name
+       , department
+       , hire_date
+       , ROW_NUMBER() OVER (ORDER BY hire_date) AS row_num
+  FROM employees;
 
 #############################
 -- Task Three: Ranking
@@ -40,30 +41,72 @@ FROM employees;
 #############################
 
 -- 3.1: Recall the use of ROW_NUMBER()
-SELECT first_name, email, department, salary,
-ROW_NUMBER() OVER(PARTITION BY department
-				  ORDER BY salary DESC)
-FROM employees;
+SELECT first_name
+       , email
+       , department
+       , salary
+       , ROW_NUMBER() OVER(PARTITION BY department
+						   ORDER BY salary DESC
+						  )
+  FROM employees;
 
 -- 3.2: Let's use the RANK() function
-
 
 -- Exercise 3.1: Retrieve the hire_date. Return details of
 -- employees hired on or before 31st Dec, 2005 and are in
 -- First Aid, Movies and Computers departments 
-SELECT first_name, email, department, salary, ___
-RANK() OVER(PARTITION BY department
-			ORDER BY salary DESC)
-FROM employees
-WHERE ___ AND department ___;
-
--- This returns how many employees are in each department
-SELECT department, COUNT(*) dept_count
-FROM employees
-GROUP BY department
-ORDER BY dept_count DESC;
+	
+SELECT employee_id
+	   , department
+	   , salary
+	   , hire_date
+	   , RANK() OVER(
+					 PARTITION BY department
+					 ORDER BY salary DESC
+					) 
+					 AS dept_salary_rank
+  FROM employees
+  WHERE hire_date <=  '2005-12-31'
+	AND department IN (
+						 'First Aid'
+					   , 'Movies'
+					   , 'Computers'
+					  )
 
 -- 3.3: Return the fifth ranked salary for each department
+
+WITH dept_salary_ranks AS (
+						   SELECT employee_id
+								  , department
+                                  , salary
+                                  , RANK() OVER(
+												PARTITION BY department
+                                                ORDER BY salary DESC
+											   )
+										AS dept_salary_rank
+						     FROM employees
+						  )
+	SELECT employee_id
+          , department
+          , salary
+          , dept_salary_rank
+	  FROM dept_salary_ranks
+      WHERE dept_salary_rank = 5
+;
+
+
+-- ************ -- ************* -- *************** --
+-- vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv --
+
+
+
+
+
+
+
+
+
+
 
 
 -- Create a common table expression to retrieve the customer_id, 
