@@ -94,38 +94,6 @@ WITH dept_salary_ranks AS (
       WHERE dept_salary_rank = 5
 ;
 
-
--- ************ -- ************* -- *************** --
--- vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv --
-
-
-
-
-
-
-
-
-
-
-
-
--- Create a common table expression to retrieve the customer_id, 
--- and how many times the customer has purchased from the mall 
-WITH purchase_count AS (
-SELECT customer_id, COUNT(sales) AS purchase
-FROM sales
-GROUP BY customer_id
-ORDER BY purchase DESC
-)
-
--- 3.4: Understand the difference between ROW_NUMBER, RANK, DENSE_RANK
-SELECT customer_id, purchase,
-ROW_NUMBER() OVER (ORDER BY purchase DESC) AS Row_N,
-RANK() OVER (ORDER BY purchase DESC) AS Rank_N,
-DENSE_RANK() OVER (ORDER BY purchase DESC) AS Dense_Rank_N
-FROM purchase_count
-ORDER BY purchase DESC;
-
 #############################
 -- Task Four: Paging: NTILE()
 -- In this task, we will learn how break/page
@@ -138,20 +106,48 @@ ORDER BY purchase DESC;
 
 -- 4.2: Group the employees table into five groups for 
 -- each department based on the order of their salaries
-SELECT first_name, email, department, salary,
-NTILE(5) OVER(PARTITION BY department
-			  ORDER BY salary DESC)
-FROM employees;
+SELECT first_name
+       , email
+       , department
+       , salary
+       , NTILE(5) OVER(PARTITION BY department
+			           ORDER BY salary DESC
+					  )
+  FROM employees
+;
 
 -- Create a CTE that returns details of an employee
 -- and group the employees into five groups
 -- based on the order of their salaries
 WITH salary_ranks AS (
-SELECT first_name, email, department, salary,
-NTILE(5) OVER(ORDER BY salary DESC) AS rank_of_salary
-FROM employees)
-
+					  SELECT first_name
+							 , email
+                             , department
+                             , salary
+                             ,NTILE(5) OVER(ORDER BY salary DESC) AS rank_of_salary
+						 FROM employees
+					 )
 -- 4.3: Find the average salary for each group of employees
+  SELECT rank_of_salary, AVG(salary)
+    FROM salary_ranks
+    GROUP BY rank_of_salary
+;
+
+------------------------
+-- vvvvvvvvvvvvvvvvvv --
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #############################
