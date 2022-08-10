@@ -133,23 +133,6 @@ WITH salary_ranks AS (
     GROUP BY rank_of_salary
 ;
 
-------------------------
--- vvvvvvvvvvvvvvvvvv --
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #############################
 -- Task Five: Aggregate Window Functions - Part One
 -- In this task, we will learn how to use
@@ -157,34 +140,62 @@ WITH salary_ranks AS (
 #############################
 
 -- 5.1: This returns how many employees are in each department
-SELECT department, COUNT(*) AS dept_count
-FROM employees
-GROUP BY department
-ORDER BY department;
+SELECT department
+	   , COUNT(*) AS dept_count
+  FROM employees
+  GROUP BY department
+  ORDER BY department;
 
 -- 5.2: Retrieve the first names, department and 
 -- number of employees working in that department
-SELECT first_name, department, 
-(SELECT COUNT(*) AS dept_count FROM employees e1 WHERE e1.department = e2.department)
-FROM employees e2
-GROUP BY department, first_name
-ORDER BY department;
+SELECT first_name
+       , department
+       , (SELECT COUNT(*) AS dept_count 
+            FROM employees e1 
+            WHERE e1.department = e2.department
+		 )
+  FROM employees e2
+  GROUP BY department
+           , first_name
+  ORDER BY department
+;
 
--- The solution
+-- The solution with Window Functions
 
+SELECT first_name
+	   , department
+       , COUNT(*) OVER(PARTITION BY department)
+  FROM employees
+;
 
 -- 5.3: Total Salary for all employees
-
+SELECT employee_id
+	   , SUM(salary) OVER() AS total_salary
+  FROM employees
+;
 
 -- 5.4: Total Salary for each department
+SELECT employee_id
+       , department
+       , SUM(salary) 
+		   OVER(PARTITION BY department)
+           AS dept_total_salary
+  FROM employees
+;
 
-
--- Exercise 5.1: Total Salary for each department and
+-- Exercise 5.1: Running Total Salary for each department and
 -- order by the hire date. Call the new column running_total
-SELECT first_name, hire_date, department, salary,
-___(___) OVER(___ ___
-				 ___ ___) AS ___
-FROM employees;
+SELECT first_name
+       , hire_date
+       , department
+       , salary
+       , SUM(salary)
+           OVER(PARTITION BY department
+                ORDER BY hire_date
+			   )
+		   AS dept_running_total_salary
+  FROM employees
+;
 
 #############################
 -- Task Six: Aggregate Window Functions - Part Two
@@ -192,20 +203,46 @@ FROM employees;
 -- aggregate window functions in SQL
 #############################
 
--- Retrieve the different region ids
-SELECT DISTINCT region_id
-FROM employees;
-
 -- 6.1: Retrieve the first names, department and 
 -- number of employees working in that department and region
 
+SELECT first_name
+       , department
+       , region_id
+       , COUNT(*) 
+           OVER(PARTITION BY department
+                             , region_id
+			    )
+		   AS n_employees
+  FROM employees
+;
 
 -- Exercise 6.1: Retrieve the first names, department and 
 -- number of employees working in that department and in region 2
-SELECT first_name, department, 
-___ OVER(___ ___) AS dept_count
-FROM employees
-___ ___ = ___;
+SELECT first_name
+       , department
+       , COUNT(*)
+           OVER(PARTITION BY department)
+		   AS n_employees
+  FROM employees
+  WHERE region_id = 2
+;
+
+-- vvvvvvvvvvvvvvvvv --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- Create a common table expression to retrieve the customer_id, 
 -- ship_mode, and how many times the customer has purchased from the mall
