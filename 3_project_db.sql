@@ -1062,35 +1062,52 @@ insert into employees values (998, 'Brandice', 'Gillicuddy', 'bgillicuddyrp@adob
 insert into employees values (999, 'Kingston', 'Piwall', 'kpiwallrq@nyu.edu', '2012-07-07', 'Music', 'M', 45679, 7);
 insert into employees values (1000, 'Jacquelin', 'Cassam', 'jcassamrr@cam.ac.uk', '2010-01-27', 'Music', 'F', 28726, 2);
 
+
 -- Create the customers table
 CREATE TABLE customers
 (
-    Customer_ID CHAR(8) PRIMARY KEY,
-	Bracket_cust_id CHAR(10),
-    Customer_Name VARCHAR(255),
-    Segment VARCHAR(255),
-    Age INT,
-	Country VARCHAR(255),
-	City VARCHAR(255),
-	State VARCHAR(255),
-    Postal_Code INT,
-	Region VARCHAR(255)
+    customer_id CHAR(8) PRIMARY KEY,
+	bracket_cust_id CHAR(10),
+    customer_name VARCHAR(255),
+    segment VARCHAR(255),
+    age INT,
+	country VARCHAR(255),
+	city VARCHAR(255),
+	state VARCHAR(255),
+    postal_code INT,
+	region VARCHAR(255)
 );
 
--- Create the sales table
+-- read customer data from CSV
+LOAD DATA INFILE '/Users/bfs7/sql-window-functions/customers.csv'
+  INTO TABLE customers
+  FIELDS TERMINATED BY ','
+  IGNORE 1 ROWS
+;
+
+-- create Sales table
 CREATE TABLE sales
 (
-    Order_line INT,
-	Order_ID VARCHAR(255),
-	Order_Date DATE,
-	Ship_Date DATE,
-    Ship_Mode VARCHAR(255),
-    Customer_ID CHAR(8),
-	Product_ID VARCHAR(255),
-	Category VARCHAR(255),
-	Sub_Category VARCHAR(255),
-	Sales DECIMAL(10,5),
-	Quantity INT,
-    Discount DECIMAL(4,2),
-	Profit DECIMAL(10,5)
+    order_line INT,
+	order_id VARCHAR(255),
+	order_date DATE,
+	ship_date DATE,
+    ship_mode VARCHAR(255),
+    customer_id CHAR(8),
+	product_id VARCHAR(255),
+	category VARCHAR(255),
+	sub_category VARCHAR(255),
+	sales DECIMAL(10,5),
+	quantity INT,
+    discount DECIMAL(4,2),
+	profit DECIMAL(10,5)
 );
+
+-- read sales data from CSV
+LOAD DATA INFILE '/Users/bfs7/sql-window-functions/sales.csv'
+  INTO TABLE sales
+  FIELDS TERMINATED BY ','
+  IGNORE 1 ROWS
+;
+
+select * from sales;
